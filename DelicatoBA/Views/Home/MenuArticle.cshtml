@@ -1,0 +1,59 @@
+﻿@model DelicatoBA.ViewModel.MenuArticleViewModel
+
+
+
+<div class="box-wraper">
+    <form action="@Url.Action("SearchArticle")" class="search-form" method="get" data-hs-cf-bound="true">
+        <div class="input-group">
+            <input type="text" value="@Request.QueryString["keyword"]" name="keyword" class="form-control rounded-pill"
+                   placeholder="Tên bài viết">
+            <div class="input-group-append">
+                <button type="submit" class="btn"><i class="fal fa-search"></i></button>
+            </div>
+        </div>
+    </form>
+    <ul class="category-menu">
+        @foreach (var cat in Model.ArticleCategories.Where(p => p.ParentId == null))
+        {
+            <li>
+                <a href="@Url.Action("ArticleCategory","Home",new {url = cat.Url})">@cat.CategoryName</a>
+                @if (Model.ArticleCategories.Any(p => p.ParentId == cat.Id))
+                {
+                    <ul>
+                        @foreach (var item in Model.ArticleCategories.Where(p => p.ParentId == cat.Id))
+                        {
+                            <li>
+                                <a href="@Url.Action("ArticleCategory","Home",new {url = item.Url})">
+                                    <i class="fal fa-angle-right"></i> @item.CategoryName
+                                </a>
+                            </li>
+
+                        }
+                    </ul>
+                }
+            </li>
+        }
+    </ul>
+    <div class="title-category mt-3">
+        Bài viết gần đây
+    </div>
+    @foreach (var article in Model.Articles)
+    {
+        <div class="article-recently p-2">
+            @if (article.Image != null)
+            {
+                <a href="@Url.Action("ArticleDetail", new { url = article.Url })">
+                    <img src="@Path.Combine("/images/articles/", article.Image)" alt="">
+                </a>
+            }
+            <div class="body">
+                <a href="@Url.Action("ArticleDetail", new { url = article.Url })">@article.Subject</a>
+                <div class="date py-2">
+                    <i class="fas fa-calendar-alt mr-1"></i>
+                    @article.CreateDate.ToString("dd/MM/yyyy")
+                </div>
+            </div>
+        </div>
+
+    }
+</div>

@@ -1,0 +1,26 @@
+﻿
+@model DelicatoBA.Models.Contact
+
+<div class="contact-form" id="">
+    <div class="text-center title">ĐỂ LẠI THÔNG TIN NHẬN TƯ VẤN</div>
+    <form id="contact_form" class="contact-form-input">
+        @Html.ValidationSummary(true)
+        @Html.AntiForgeryToken()
+        <p class="sub-title">Vui lòng nhập đầy đủ thông tin để chúng tôi liên hệ với quý khách trong thời gian sớm nhất</p>
+        <div class="form-group">
+            @Html.TextBoxFor(model => model.Fullname, new { @class = "form-control", placeholder = "Tên" })
+            @Html.ValidationMessageFor(model => model.Fullname)
+        </div>
+        <div class="form-group">
+            @Html.TextBoxFor(model => model.Email, new { @class = "form-control", placeholder = "Email" })
+            @Html.ValidationMessageFor(model => model.Email)
+        </div>
+        <div class="form-group">
+            @Html.TextAreaFor(model => model.Body, new { @class = "form-control", rows = 3, placeholder = "Nội dung" })
+            @Html.ValidationMessageFor(model => model.Body)
+        </div>
+        <div class="form-group">
+            <input type="submit" class="btn send" name="Gửi" value="Gửi" />
+        </div>
+    </form>
+</div>

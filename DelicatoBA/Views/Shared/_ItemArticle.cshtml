@@ -1,0 +1,22 @@
+﻿@model DelicatoBA.Models.Article
+<div class="blog-item">
+    <a href="@Url.Action("ArticleDetail", "Home", new { url = Model.Url })">
+        @if (Model.Image != null)
+        {
+            <img src="@Path.Combine("/images/articles/", Model.Image)" alt="@Model.Subject">
+        }
+    </a>
+    <div class="body">
+        <div class="date">@Model.CreateDate.ToString("dd"), Tháng @Model.CreateDate.ToString("MM, yyyy")</div>
+        <div class="name">
+            <a href="@Url.Action("ArticleDetail", "Home", new { url = Model.Url })">@Model.Subject</a>
+        </div>
+        <div class="des">
+            @Model.Description
+        </div>
+        <div class="read">
+            <a href="@Url.Action("ArticleDetail", "Home", new { url = Model.Url })">Đọc tiếp</a>
+            <i class="fal fa-arrow-right"></i>
+        </div>
+    </div>
+</div>

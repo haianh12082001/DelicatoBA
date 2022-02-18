@@ -1,0 +1,12 @@
+﻿@model DelicatoBA.Models.Project
+<div class="project-box">
+    <a href="@Url.Action("ProjectDetail","Home", new {url = Model.Url})">
+    <div class="item-img">
+            <img src="@Path.Combine("/images/projects/", Model.ListImage.Split(',')[0])" alt="@Model.Name">
+        <div class="sapo">
+            @Html.Raw(Model.Description)
+        </div>
+    </div>
+    </a>
+    <div class="name">@Model.Name</div>
+</div>

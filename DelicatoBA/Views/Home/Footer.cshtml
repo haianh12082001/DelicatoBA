@@ -1,0 +1,95 @@
+﻿@model DelicatoBA.ViewModel.FooterViewModel
+@using DelicatoBA.Models
+@{
+    var config = (ConfigSite)HttpContext.Current.Application["ConfigSite"];
+}
+<footer class="footer">
+    <div class="container footer-container">
+        <div class="footer-img">
+            <img src="@Path.Combine("/images/configs",config.Image)" alt="" class="">
+        </div>
+        <div class="row row-cols-lg-5 mt-5">
+            <div class="col-lg col-md-6 col-12">
+                <div class="title">Liên hệ</div>
+                <div class="address mb-2">@config.Place</div>
+                <div class="phone">@config.Hotline</div>
+                <div class="email">@config.Email</div>
+                <div class="footer-social">
+
+                    <a href="@config.Facebook" class="item">
+                        <i class="fab fa-facebook-f"></i>
+                    </a>
+                    <a href="@config.Twitter" class="item">
+                        <i class="fab fa-twitter"></i>
+                    </a>
+                    <a href="@config.Instagram" class="item">
+                        <i class="fab fa-instagram"></i>
+                    </a>
+                    <a href="@config.Youtube" class="item">
+                        <i class="fab fa-youtube"></i>
+                    </a>
+                   
+                </div>
+            </div>
+            <div class="col-lg col-6">
+                <div class="title">Liên kết</div>
+                @foreach(var item in Model.Intro.Where(a => a.ParentId == null && a.ShowFooter))
+                {
+                <div class="footer-link">
+                    <a href="@Url.Action("ArticleCategory",new {url = item.Url})">@item.CategoryName</a>
+                </div>
+
+                }
+                <div class="footer-link">
+                    <a href="">Dự án</a>
+                </div>
+                @foreach(var item in Model.ArticleCategories.Where(a => a.ParentId == null && a.ShowFooter))
+                {
+                <div class="footer-link">
+                    <a href="@Url.Action("ArticleCategory",new {url = item.Url})">@item.CategoryName</a>
+                </div>
+                    
+                }
+            </div>
+            <div class="col-lg col-6">
+                @if(Model.Service.Any(a => a.ParentId == null))
+                {
+                <div class="title">Dịch vụ</div>
+                 foreach(var item in Model.Service.Where(a => a.ParentId != null && a.ShowFooter)) 
+                 { 
+                <div class="footer-link">
+                    <a href="@Url.Action("ArticleCategory",new {url = item.Url})">@item.CategoryName</a>
+                </div>
+                 
+                 }
+
+                }
+            </div>
+            <div class="col-lg col-md-6 col-12">
+                <div class="title">newsletter</div>
+                <span>Nhận thông báo mới nhất</span>
+                <form action="" id="formSubscribe" class="footer-form">
+                    <div class="input-group">
+                    @Html.AntiForgeryToken()
+                    @Html.ValidationSummary(true)
+                        <input type="text" name="email" class=" placeholder-gray"
+                               placeholder="Nhận email...">
+                        <button type="submit" class="btn">
+                            <i class="fas fa-envelope"></i>
+                        </button>
+                    </div>
+                </form>
+            </div>
+            <div class="col-lg col-12">
+                <div class="title">map</div>
+                <div class="embed-responsive embed-responsive-16by9">
+                    @Html.Raw(config.GoogleMap)
+                </div>
+            </div>
+        </div>
+        <div class="copyright">Copyright © 2022 Delicato. All Rights Reserved. Designed by Vico Group</div>
+    </div>
+    <img src="~/Content/images/icon-tree.png" alt="" class="footer-bg">
+</footer>
+<a href="@config.LinkGoogleMap" class="icon-fixed map"><i class="fas fa-map-marked-alt"></i></a>
+<a href="" class="icon-fixed chat"><i class="fas fa-comment-dots"></i></a>

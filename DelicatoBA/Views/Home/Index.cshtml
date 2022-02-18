@@ -1,0 +1,269 @@
+﻿@model DelicatoBA.ViewModel.HomeViewModel
+@using DelicatoBA.Models
+@{
+    var config = (ConfigSite)HttpContext.Current.Application["ConfigSite"];
+    ViewBag.Title = config.Title;
+    ViewBag.Description = config.Description;
+    ViewBag.Canonical = Request.Url?.GetLeftPart(UriPartial.Authority) + Url.Action("Index");
+    if (Model.Banners.Any(l => l.GroupId == 1))
+    {
+        var fb = Model.Banners.First(l => l.GroupId == 1);
+        ViewBag.ImageShare = Request.Url?.GetLeftPart(UriPartial.Authority) + Path.Combine("/images/banners/", fb.Image);
+    }
+}
+@if (Model.Banners.Any(l => l.GroupId == 1))
+{
+    <section class="banner">
+        <div class="banner-list">
+            @foreach (var banner in Model.Banners.Where(l => l.GroupId == 1 && l.Image != null).Take(4))
+            {
+                <div class="banner-item">
+                    <img src="@Path.Combine("/images/banners/",banner.Image)" alt="@banner.BannerName" />
+                    <div class="name">@banner.BannerName</div>
+                </div>
+            }
+        </div>
+    </section>
+
+}
+<!-- GIỚI THIỆU -->
+<section class="intro">
+    <img src="~/Content/images/icon-tree.png" alt="" class="img-tree" />
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-6 mb-4" data-aos="fade-up">
+                <div class="section-sub-title">Giới thiệu</div>
+                <div class="section-title text-uppercase">về DELICATO</div>
+                <div class="content">
+                    @Html.Raw(config.AboutText)
+                </div>
+                @if (Model.Banners.Any(l => l.GroupId == 2))
+                {
+                    <div class="row gutters-5">
+                        @foreach (var banner in Model.Banners.Where(l => l.GroupId == 2 && l.Image != null).Take(3))
+                        {
+                            <div class="col-lg-4 col-md-4 col-4">
+                                <img src="@Path.Combine("/images/banners/",banner.Image)" alt="@banner.BannerName" class="intro-img--left" />
+                            </div>
+                        }
+                    </div>
+                }
+                <div class="see-more">
+                    <img src="~/Content/images/icon-tree.png" alt="" />
+                    <a href="@Url.Action("ArticleDetail", new { url = config.AboutUrl})">XEM THÊM</a>
+                </div>
+            </div>
+            @if (Model.Banners.Any(l => l.GroupId == 3))
+            {
+                <div class="col-lg-6 mb-4 " data-aos="fade-down">
+                    @foreach (var banner in Model.Banners.Where(l => l.GroupId == 3 && l.Image != null).Take(1))
+                    {
+                        <div class="intro-img--right">
+                            <img src="@Path.Combine("/images/banners/",banner.Image)" alt="@banner.BannerName" />
+                        </div>
+
+                    }
+                </div>
+            }
+        </div>
+    </div>
+</section>
+<!-- DỰ ÁN -->
+@if (Model.Projects.Any(a => a.Active && a.Home))
+{
+    <section class="project" data-aos="fade-up" data-aos-anchor-placement="top-bottom">
+        <div class="section-sub-title text-center">Dự án</div>
+        <div class="project-list">
+            @foreach (var item in Model.Projects)
+            {
+
+                <div class="project-item">
+                    <div class="title text-uppercase">
+                        @item.Name
+                    </div>
+                    <div class="des">
+                        @item.Description
+                    </div>
+                    <div class="see-detail">
+                        <a href="@Url.Action("ProjectDetail", "Home", new {url = @item.Url})">Xem chi tiết</a>
+                        <i class="fas fa-arrow-right"></i>
+                    </div>
+                </div>
+
+
+
+            }
+        </div>
+        <div class="nav-project">
+            @foreach (var item in Model.Projects)
+            {
+                <div class="project-img" data-aos="zoom-out-up">
+                    <img src="@Path.Combine("/images/projects/", item.ListImage.Split(',')[0])" alt="" />
+                </div>
+
+            }
+
+        </div>
+        <div class="text-center mt-lg-5 mt-3">
+            <div class="see-more">
+                <img src="~/Content/images/icon-tree-sm.png" alt="">
+                <a href="@Url.Action("AllProject")">XEM TẤT CẢ</a>
+            </div>
+        </div>
+    </section>
+
+}
+<!-- Hình ảnh công trình -->
+@if (Model.ProjectsHot.Any(a => a.Active && a.Hot))
+{
+    <section class="construction">
+        <div class="container">
+            <div class="row no-gutters">
+                @foreach (var item in Model.ProjectsHot.Where(l => l.Hot && l.ListImage != null).Take(1))
+                {
+                    <div class="col-lg-6 col-md-6" data-aos="fade-up" data-aos-delay="100">
+                        <div class="construction-img">
+                            <img src="@Path.Combine("/images/projects/", item.ListImage.Split(',')[0])" alt="@item.Name">
+                        </div>
+
+                    </div>
+                    <div class="col-lg-6 col-md-6 d-flex align-items-center" data-aos="fade-down" data-aos-delay="300">
+                        <div class="content">
+                            <div class="section-sub-title">Delicato</div>
+                            <div class="section-title text-uppercase">@item.Name</div>
+                            <div class="body mb-3">
+                                @Html.Raw(item.Description)
+                            </div>
+                            <div class="see-more">
+                                <img src="~/Content/images/icon-tree.png" alt="" />
+                                <a href="@Url.Action("ProjectDetail", "Home", new { url = item.Url })">XEM THÊM</a>
+                            </div>
+                        </div>
+                    </div>
+
+                }
+            </div>
+        </div>
+    </section>
+
+}
+<!-- Hệ thống -->
+@if (Model.ArticleBox.Any(a => a.Box))
+{
+    <section class="factory">
+        <div class="content">
+            <div class="container">
+                @foreach (var item in Model.ArticleBox)
+                {
+                    <div class="section-sub-title">Delicato</div>
+                    <div class="section-title text-uppercase">@item.Subject</div>
+                    <div class="des">
+                        @Html.Raw(item.Description)
+                    </div>
+                    <div class="see-more">
+                        <img src="~/Content/images/icon-tree-sm.png" alt="" />
+                        <a href="">XEM THÊM</a>
+                    </div>
+
+                }
+            </div>
+        </div>
+    </section>
+
+}
+<!-- NHÂN SỰ CỦA CHÚNG TÔI -->
+@if (Model.Teams.Any())
+{
+    <section class="personnel">
+        <div class="section-sub-title text-center">Team</div>
+        <div class="section-title text-uppercase text-center">Nhân sự của chúng tôi</div>
+        <div class="container">
+            <div class="personnel-list mt-4">
+                @foreach (var team in Model.Teams)
+                {
+                    <div class="personnel-item">
+                        <div class="personnel-img">
+                            <a href="@Url.Action("TeamDeital", "Home", new {Id = team.Id})"  data-fancybox="" data-type="ajax" data-touch="false" tabindex="">
+                                <img src="@Path.Combine("/images/team/",team.Image)" alt="">
+                            </a>
+                        </div>
+                        <div class="name text-center">@team.Name</div>
+                        <div class="occ text-center">@team.Office</div>
+                    </div>
+                }
+               
+            </div>
+        </div>
+    </section>
+
+}
+
+@if (Model.Banners.Any(l => l.GroupId == 4))
+{
+    <section class="info-ex">
+        <div class="container">
+            <div class="row">
+                @foreach (var banner in Model.Banners.Where(l => l.GroupId == 4 && l.Image != null).Take(4))
+                {
+                    <div class="col-lg-3 col-6 mb-4 mb-sm-0">
+                        <div class="chart" data-percent="@banner.Number">
+                            <span class=""><p class="counter"> @banner.Number</p>%</span>
+                        </div>
+                        <p>@banner.BannerName</p>
+                    </div>
+                }
+            </div>
+        </div>
+    </section>
+
+}
+
+<!-- TIN TỨC -->
+@if (Model.Articles.Any(a => a.ArticleCategory.TypePost == TypePost.Article))
+{
+    <section class="blog">
+        <div class="container">
+            <div class="section-sub-title text-center">Blog</div>
+            <div class="section-title text-center">TIN TỨC MỚI NHẤT</div>
+            <div class="row mt-4">
+                @foreach (var article in Model.Articles.Where(a => a.ArticleCategory.TypePost == TypePost.Article))
+                {
+                    <div class="col-lg-4 ">
+                        <div class="blog-item">
+                            <a href="@Url.Action("ArticleDetail", "Home", new { url = article.Url})">
+                                @if (article.Image != null)
+                                {
+                                    <img src="@Path.Combine("/images/articles/", article.Image)" alt="@article.Subject">
+                                }
+                            </a>
+                            <div class="body">
+                                <div class="date">@article.CreateDate.ToString("dd"), Tháng @article.CreateDate.ToString("MM, yyyy")</div>
+                                <div class="name">
+                                    <a href="@Url.Action("ArticleDetail","Home", new { url = article.Url})">@article.Subject</a>
+                                </div>
+                                <div class="des">
+                                    @article.Description
+                                </div>
+                                <div class="read">
+                                    <a href="@Url.Action("ArticleDetail","Home", new { url = article.Url})">
+                                        Đọc tiếp
+                                        <i class="fal fa-arrow-right ml-1"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                }
+            </div>
+            <div class="text-center">
+                <div class="see-more">
+                    <img src="~/Content/images/icon-tree.png" alt="" />
+                    <a href="@Url.Action("AllArticle", "Home")">XEM THÊM</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+}
+

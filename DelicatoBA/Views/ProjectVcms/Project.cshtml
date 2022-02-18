@@ -1,0 +1,186 @@
+﻿@model DelicatoBA.ViewModel.InsertProjectViewModel
+@{
+    ViewBag.Title = "Thêm dự án";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+<h2>Thêm dự án</h2>
+<a class="btn quick-link" href="@Url.Action("ListProject")"><i class="far fa-list mr-1"></i> Danh sách dự án</a>
+<div class="box_content">
+    @using (Html.BeginForm("Project", "ProjectVcms", FormMethod.Post, new { enctype = "multipart/form-data" }))
+    {
+        @Html.ValidationSummary(true)
+    <table class="form_table">
+        <tr>
+            <td class="form_name">@Html.LabelFor(model => model.CategoryId)</td>
+            <td class="form_text">
+                <div class="row">
+                    <div class="col-4">
+                        @Html.DropDownListFor(model => model.ParentId, Model.ProjectCategoryList, "Danh mục dự án cha", new { @class = "form_control w300", onchange = "loadChildCategory(this.value)" })
+                        @Html.ValidationMessageFor(model => model.ParentId)
+                    </div>
+                    <div class="col-4">
+                        @Html.DropDownListFor(model => model.CategoryId, Model.ChildCategoryList, "Danh mục dự án", new { @class = "form_control w300", id = "ChildCategoryId" })
+                        @Html.ValidationMessageFor(model => model.CategoryId)
+                    </div>
+                    @*<div class="col-4">
+                        @Html.EnumDropDownListFor(model => model.Project.ProjectType, new { @class = "form_control w300" })
+                    </div>*@
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td class="form_name">@Html.LabelFor(model => model.Project.Name)</td>
+            <td class="form_text">@Html.EditorFor(model => model.Project.Name)</td>
+        </tr>
+        @*<tr>
+            <td class="form_name">@Html.LabelFor(model => model.Project.Code)</td>
+            <td class="form_text">@Html.EditorFor(model => model.Project.Code)</td>
+        </tr>*@
+        <tr>
+            <td class="form_name">@Html.LabelFor(model => model.Project.ListImage)</td>
+            <td class="form_text">
+                <div class="alert alert-info">
+                    <p class="btn btn-success fileinput-button">
+                        <i class="glyphicon glyphicon-plus"></i>
+                        <span>Chọn ảnh...</span>
+                        <input type="file" id="fileupload" name="files[]" accept="image/*" multiple="" />
+                    </p><br />
+                    - Chọn ảnh để upload: (gif, png, jpg, jpeg < 4MB)<br />
+                    - Ảnh đầu tiên sẽ là ảnh đại diện<br />
+                </div>
+                <div id="progress" class="progress">
+                    <div class="progress-bar progress-bar-success"></div>
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td class="form_name"></td>
+            <td class="form_text">
+                <ul id="ListImages"></ul>
+            </td>
+        </tr>
+        <tr>
+            <td class="form_name">@Html.LabelFor(model => model.Project.Description)</td>
+            <td class="form_text">
+                @Html.EditorFor(model => model.Project.Description)
+                @Html.ValidationMessageFor(model => model.Project.Description)
+            </td>
+        </tr>
+        @*<tr>
+            <td class="form_name">@Html.LabelFor(model => model.Project.Quantity)</td>
+            <td class="form_text">@Html.EditorFor(model => model.Project.Quantity)</td>
+        </tr>*@
+        <tr>
+            <td class="form_name">@Html.LabelFor(model => model.Project.Body)</td>
+            <td class="form_text">@Html.EditorFor(model => model.Project.Body)</td>
+        </tr>
+        @*<tr>
+            <td class="form_name">@Html.LabelFor(model => model.Project.Use)</td>
+            <td class="form_text">@Html.EditorFor(model => model.Project.Use)</td>
+        </tr>*@
+        <tr>
+            <td class="form_name">@Html.LabelFor(model => model.Project.Home)</td>
+            <td class="form_text">@Html.EditorFor(model => model.Project.Home)</td>
+        </tr>
+        <tr>
+            <td class="form_name">@Html.LabelFor(model => model.Project.Hot)</td>
+            <td class="form_text">@Html.EditorFor(model => model.Project.Hot)</td>
+        </tr>
+        <tr>
+            <td class="form_name">@Html.LabelFor(model => model.Project.Active)</td>
+            <td class="form_text">@Html.CheckBoxFor(model => model.Project.Active, new { @checked = "checked" })</td>
+        </tr>
+        <tr>
+            <td class="form_name">@Html.LabelFor(model => model.Project.Sort)</td>
+            <td class="form_text">@Html.EditorFor(model => model.Project.Sort)</td>
+        </tr>
+        <tr>
+            <td class="form_name">@Html.LabelFor(model => model.Project.TitleMeta)</td>
+            <td class="form_text">@Html.EditorFor(model => model.Project.TitleMeta)</td>
+        </tr>
+        <tr>
+            <td class="form_name">@Html.LabelFor(model => model.Project.DescriptionMeta)</td>
+            <td class="form_text">@Html.EditorFor(model => model.Project.DescriptionMeta)</td>
+        </tr>
+        <tr>
+            <td class="form_name"></td>
+            <td class="form_text">
+                <input type="submit" class="btn quick-link" value="Thêm mới" />
+            </td>
+        </tr>
+    </table>
+    }
+</div>
+@section scripts{
+    <script src="~/Scripts/jquery.maskMoney.min.js"></script>
+    <script>
+        $(function () {
+            $(".input-number").maskMoney({
+                precision: 0,
+                thousands: ','
+            });
+        });
+        $(function () {
+            $("#ListImages").sortable();
+            $("#ListImages").disableSelection();
+        });
+        var i = 1;
+        $("#fileupload").fileupload({
+            add: function (e, data) {
+                var uploadErrors = [];
+                var acceptFileTypes = /^image\/(gif|jpe?g|png)$/i;
+                if (data.originalFiles[0]["type"].length && !acceptFileTypes.test(data.originalFiles[0]["type"])) {
+                    uploadErrors.push("Chỉ chấp nhận định dạng jpeg, jpg, png, gif");
+                }
+                if (data.originalFiles[0]["size"] > 4000000) {
+                    uploadErrors.push("Dung lượng ảnh lớn hơn 4MB");
+                }
+                var totalImg = $("#ListImages .thumb-img-box").length;
+                if (totalImg >= 10) {
+                    uploadErrors.push("Chỉ đăng tối đa 10 ảnh");
+                }
+                if (uploadErrors.length > 0) {
+                    alert(uploadErrors.join("\n"));
+                    return false;
+                } else {
+                    data.submit();
+                }
+                return true;
+            },
+            url: "/Uploader/Upload?folder=projects&r=" + Math.random(),
+            dataType: "json",
+            done: function (e, data) {
+                $.each(data.result.files, function (index, file) {
+                    $('#ListImages').append('<li><input type="hidden" name="Pictures" value ="' + file.name + '" /><img src="/images/projects/' + file.name + '?w=80&h=80"/><a href="javascript:;" id="' + i + '" onclick="delfile(' + i + ')"><img src="/content/admin/icon-delete.png" alt="" style="vertical-align:middle" /></a></li>');
+                });
+                i = i + 1;
+                $("#progress").fadeOut(2000);
+            },
+            start: function () {
+                $("#progress .progress-bar").css("width", "0");
+                $("#progress").show();
+            },
+            progressall: function (e, data) {
+                var progress = parseInt(data.loaded / data.total * 100, 10);
+                $("#progress .progress-bar").css("width", progress + "%");
+            }
+        }).prop('disabled', !$.support.fileInput).parent().addClass($.support.fileInput ? undefined : 'disabled');
+
+        function delfile(divid) {
+            if (confirm('Bạn có chắc xóa ảnh này?')) {
+                $('#' + divid).parent().fadeOut().remove();
+            }
+        }
+
+        function loadChildCategory(id) {
+            $.getJSON("/ProjectVcms/GetChildCategory", { parentId: id }, function (data) {
+                var items = [];
+                items.push("<option value>Hãy chọn danh mục</option>");
+                $.each(data, function (key, val) {
+                    items.push("<option value='" + val.Id + "'>" + val.CategoryName + "</option>");
+                });
+                $("#ChildCategoryId").html(items.join(""));
+            });
+        }
+    </script>
+}

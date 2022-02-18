@@ -1,0 +1,40 @@
+﻿@using PagedList.Mvc
+@model DelicatoBA.ViewModel.CategoryProjectViewModel
+@{
+    ViewBag.Title = Model.Category.TitleMeta ?? Model.Category.CategoryName;
+    ViewBag.Description = Model.Category.DescriptionMeta ?? Model.Category.CategoryName;
+
+    ViewBag.Canonical = Request.Url?.GetLeftPart(UriPartial.Authority) + Url.Action("ProjectCategory", new { url = Model.Category.Url });
+}
+<div class="bg-breadcrumb">
+    <div class="container">
+        <ol class="breadcrumb mb-0">
+            <li class="breadcrumb-item"><a href="@Url.Action("Index")"><i class="fas fa-home mr-1"></i>Trang chủ</a></li>
+            <li class="breadcrumb-item"><a href="@Url.Action("AllProject")">Dự án</a></li>
+            <li class="breadcrumb-item" aria-current="page">@Model.Category.CategoryName</li>
+        </ol>
+    </div>
+</div>
+
+<div class="container py-lg-4 py-3">
+    <h2 class="title-category text-center">@Model.Category.CategoryName</h2>
+    @if (Model.Projects.Any())
+    {
+        <div class="row">
+            @foreach (var project in Model.Projects)
+            {
+                <div class="col-lg-4 col-md-6 col-12 ">
+                    @Html.Partial("_ItemProject", project)
+                </div>
+
+            }
+
+        </div>
+        if (Model.Projects.PageCount > 1)
+        {
+            <div class="text-right mt-lg-4 mt-3 py-0 px-2">
+                @Html.PagedListPager(Model.Projects, page => Url.Action("ProductCategory", new { url = Model.Category.Url, page }))
+            </div>
+        }
+    }
+</div>

@@ -1,0 +1,41 @@
+﻿@model DelicatoBA.ViewModel.ProjectSearchViewModel
+@using DelicatoBA.Models
+@using PagedList.Mvc
+@{
+    var config = (ConfigSite)HttpContext.Current.Application["ConfigSite"];
+    ViewBag.Title = "Tìm kiếm dự án";
+}
+
+@if (Model.Projects.Any())
+{
+    <div class="container py-lg-4 py-3">
+        <h2 class="title-category text-center">@Model.Keywords</h2>
+        @if (Model.Projects.Any())
+        {
+            <div class="row">
+                @foreach (var project in Model.Projects)
+                {
+                    <div class="col-lg-4 col-md-6 col-12 ">
+                        @Html.Partial("_ItemProject", project)
+                    </div>
+
+                }
+
+            </div>
+            if (Model.Projects.PageCount > 1)
+            {
+                <div class="text-center mt-lg-4 mt-3 py-0 px-2">
+                    @Html.PagedListPager(Model.Projects, page => Url.Action("SearchProject", new { keywords = Model.Keywords, page }))
+                </div>
+            }
+        }
+    </div>
+}
+else
+{
+    <div class="container py-lg-5 py-4">
+        <div class="row mt-5">
+            <h3 class="col-12 keyword py-3"> Không tìm thấy dự án nào chứa: @Model.Keywords</h3>
+        </div>
+    </div>
+}

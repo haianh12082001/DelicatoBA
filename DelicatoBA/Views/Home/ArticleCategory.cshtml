@@ -1,0 +1,50 @@
+﻿@model DelicatoBA.ViewModel.CategoryArticleViewModel
+@using PagedList.Mvc
+@using DelicatoBA.Models
+@{
+    ViewBag.Title = Model.Category.TitleMeta ?? Model.Category.CategoryName;
+    ViewBag.Description = Model.Category.DescriptionMeta ?? Model.Category.CategoryName;
+    ViewBag.Canonical = Request.Url?.GetLeftPart(UriPartial.Authority) + Url.Action("ArticleCategory", new { url = Model.Category.Url });
+}
+
+<div class="bg-breadcrumb">
+    <div class="container">
+        <ol class="breadcrumb mb-0">
+            <li class="breadcrumb-item"><a href="@Url.Action("Index")"><i class="fal fa-home mr-1"></i> Trang chủ</a></li>
+            <li class="breadcrumb-item active" aria-current="page"> @Model.Category.CategoryName</li>
+        </ol>
+    </div>
+</div>
+
+<div class="container py-lg-4 py-3">
+    <div class="row">
+        <div class="col-sm-12 col-lg-9 pr-lg-0">
+            <h2 class="title-category text-center mb-lg-4 mb-3">@Model.Category.CategoryName</h2>
+            @if (Model.Articles.Any())
+            {
+                <div class="row">
+                    @foreach (var article in Model.Articles)
+                    {
+                        <div class="col-12 col-md-6 col-lg-6">
+                            @Html.Partial("_ItemArticle", article)
+                        </div>
+                    }
+                </div>
+                if (Model.Articles.PageCount > 1)
+                {
+                    <div class="text-right mt-3">
+                        @Html.PagedListPager(Model.Articles, page => Url.Action("ArticleCategory", new { url = Model.Category.Url, page }))
+                    </div>
+                }
+            }
+            else
+            {
+                <p class=" alert alert-info small">Nội dung hiện chưa được cập nhật.Vui lòng quay lại sau !!!</p>
+            }
+
+        </div>
+        <div class="col-sm-12 col-lg-3 pl-lg-4">
+            @Html.Action("MenuArticle")
+        </div>
+    </div>
+</div>

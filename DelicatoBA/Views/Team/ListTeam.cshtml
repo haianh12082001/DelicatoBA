@@ -1,0 +1,97 @@
+﻿@model DelicatoBA.ViewModel.ListTeamViewModel
+@using PagedList.Mvc
+@{
+    ViewBag.Title = "Danh sách thành viên";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+<style>
+    .img-border {
+        width: 100px;
+    }
+</style>
+
+@if (ViewBag.Result == "success")
+{
+    <div id="AlertBox" class="alert alert-success"><strong>Thêm mới thành viên thành công</strong></div>
+}
+@if (ViewBag.Result == "update")
+{
+    <div id="AlertBox" class="alert alert-success"><strong>Cập nhật thành viên thành công</strong></div>
+}
+<a class="btn quick-link" href="@Url.Action("Team")"><i class="fal fa-plus-circle mr-1"></i>Thêm thành viên</a>
+<div class="box_content">
+    <div class="form-search-list">
+        <form action="@Url.Action("ListTeam")" method="get" style="margin-left: 0;">
+            <p>
+                Tìm tên @Html.TextBoxFor(a => a.Name, new { @class = "w300" })
+                <button type="submit" class="btn-search">Tìm kiếm</button>
+            </p>
+        </form>
+    </div>
+    <p>Có tổng số <strong>@Model.Teams.TotalItemCount</strong> thành viên</p>
+    <table class="list_table tablecenter table-striped">
+        <tbody>
+            <tr>
+                <th>STT</th>
+                <th style="width: 50px">Hình ảnh</th>
+                <th style="width: 100px">Tên</th>
+                <th>Nội dung</th>
+                <th>Hoạt động</th>
+                <th style="width: 150px"></th>
+            </tr>
+            @foreach (var team in Model.Teams)
+            {
+                <tr data-id="@team.Id">
+                    <td>@Html.DisplayFor(model => team.Sort)</td>
+                    <td>
+                        @if (team.Image != null)
+                        {
+                            <img class="img-border" src="@Path.Combine("/images/team/", team.Image)" alt="" />
+                        }
+                        else
+                        {
+                            @:NO PICTURE
+                        }
+                    </td>
+                    <td class="left">
+                        <p>
+                            <a href="@Url.Action("UpdateTeam", new {teamId = team.Id})"><strong>@team.Name</strong></a>
+                        </p>
+                        @team.Office
+                    </td>
+                    <td class="text-left">@team.Body</td>
+                    <td>@Html.DisplayFor(model => team.Active)</td>
+                    <td>
+                        @*<a href="@Url.Action("UpdateFeedbackLang", new{ feedbackId = feedback.Id })" data-fancybox data-type="iframe">Ngôn ngữ</a>*@
+                        - @Html.ActionLink("Sửa", "UpdateTeam", new { teamId = team.Id })
+                        - <a href="javascript:;" onclick="deleteService('@team.Id')" style="color: red;">Xóa</a>
+                    </td>
+                </tr>
+            }
+            @if (Model.Teams.PageCount > 1)
+            {
+                <tr>
+                    <td colspan="8">@Html.PagedListPager(Model.Teams, page => Url.Action("ListTeam", new { page, name = Model.Name }))</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+@section scripts
+{
+    <script type="text/javascript">
+        function deleteService(id) {
+            if (confirm("Bạn có chắc chắn xóa thành viên này không?")) {
+                $.post("/Team/DeleteFeedback", { teamId: id }, function (data) {
+                    if (data) {
+                        alert("Xóa bài viết thành công");
+                        $("tr[data-id='" + id + "']").fadeOut();
+                    }
+                    else {
+                        alert("Quá trình thực hiện không thành công");
+                    }
+                });
+            }
+        }
+    </script>
+}

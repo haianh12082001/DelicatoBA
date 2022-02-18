@@ -1,0 +1,233 @@
+﻿@model DelicatoBA.ViewModel.ListProjectViewModel
+
+@using PagedList.Mvc
+@using Helpers
+@{
+    ViewBag.Title = "Danh sách dự án";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+<h2>Danh sách dự án</h2>
+@if (ViewBag.Result == "success")
+{
+    <div id="AlertBox" class="alert alert-success"><strong>Thêm mới dự án thành công</strong></div>
+}
+@if (ViewBag.Result == "update")
+{
+    <div id="AlertBox" class="alert alert-success"><strong>Cập nhật dự án thành công</strong></div>
+}
+<a class="btn quick-link" href="@Url.Action("Project")"><i class="fal fa-plus-circle mr-1"></i>Thêm dự án</a>
+<div class="box_content">
+    <form action="@Url.Action("ListProject")" method="get">
+        <div class="row">
+            <div class="col-3">
+                <label>Danh mục</label>
+                @Html.DropDownListFor(model => model.ParentId, Model.SelectCategories, "Tất cả dự án", new { @class = "form_control", data_item = "root" })
+            </div>
+            <div class="col-3">
+                <label>Danh mục</label>
+                @Html.DropDownListFor(model => model.CatId, Model.ChildCategoryList, "Tất cả dự án", new { @class = "form_control", data_item = "child" })
+            </div>
+            <div class="col-3">
+                <label>Từ khóa</label>
+                @Html.TextBoxFor(a => a.Name, new { @class = "form_control" })
+            </div>
+            <div class="col-3">
+                <label>Sắp xếp</label>
+                <select class="form_control" name="Sort">
+                    <option value="date-desc">Mới nhất</option>
+                    @*<option value="date-asc" @if (Model.Sort == "date-asc") { @Html.Raw("selected='selected'") }>Cũ nhất</option>
+                    <option value="sort-asc" @if (Model.Sort == "sort-asc") { @Html.Raw("selected='selected'") }>STT nhỏ nhất</option>
+                    <option value="sort-desc" @if (Model.Sort == "sort-desc") { @Html.Raw("selected='selected'") }>STT lớn nhất</option>*@
+                    <option value="hot-asc" @if (Model.Sort == "hot-asc") { @Html.Raw("selected='selected'") }> Dự án nổi bật</option>
+                </select>
+            </div>
+        </div>
+        <div class="form-group">
+            <button type="submit" class="btn-search">Tìm kiếm</button>
+        </div>
+    </form>
+    <p>Có tổng số <strong>@Model.Projects.TotalItemCount</strong> dự án</p>
+    <form id="projectList">
+        <table class="list_table tablecenter table-striped">
+            <tbody>
+                <tr>
+                    <th style="width: 100px">STT</th>
+                    <th style="width: 50px">Hình ảnh</th>
+                    <th style="width: 350px">Tên dự án</th>
+                    <th style="width: 130px">Danh mục</th>
+                    @*<th style="width: 130px">Thương hiệu</th>*@
+                    @*<th>Loại sản phẩm</th>*@
+                    @*<th>Giá sản phẩm</th>*@
+                    @*<th>Số lượng</th>*@
+                    <th>Hoạt động</th>
+                    <th>Hiện trang chủ</th>
+                    <th>Nổi bật</th>
+                    <th style="width: 140px;">@*<button type="button" class="btn quick-link" style="background-color: #004767; margin: 0 auto; padding: 10px 15px;" onclick="updateAllProject()">Cập nhật tất cả</button>*@</th>
+                </tr>
+                @foreach (var project in Model.Projects)
+                {
+            <tr data-id="@project.Id">
+                <td>
+                    <input type="hidden" name="ProjectId" value="@project.Id" />
+                    @*<input type="number" name="Sort" id="Sort" min="0" value="@project.Sort" class="form_control" style="width: 60px" />*@
+                    @Html.EditorFor(a => project.Sort)
+                </td>
+                <td>
+                    @if (project.ListImage != null)
+                    {
+                        <a href="@Url.Action("ProjectDetail", "Home", new {proId = project.Id, name = Html.ConvertToUnSign(project.Name)})" target="_blank"><img class="img-border" src="@Path.Combine("/images/projects/", project.ListImage.Split(',')[0])" style="width: 100px; height: 80px" alt="" /></a>
+                    }
+                    else
+                    {
+                        @:NO PICTURE
+                    }
+                </td>
+                <td class="left">
+
+                    <p><a href="@Url.Action("UpdateProject", new { proId = project.Id })"><strong>@project.Name</strong></a></p>
+
+                    <p>
+                        @*Trang chủ - @Html.EditorFor(model => project.Home, new { htmlAttributes = new { id = "Home" } })*@
+                    </p>
+                </td>
+                <td>@project.ProjectCategory.CategoryName</td>
+
+                <td>
+                    @Html.EditorFor(model => project.Active, new { htmlAttributes = new { onclick = "updateStatus(" + project.Id + ")", id = "ProjectStatus" } })<br />
+                    <span id="statusResult"></span>
+                </td>
+                <td>
+                    @Html.EditorFor(model => project.Home, new { htmlAttributes = new { id = "Home" } })
+                </td>
+                <td>
+                    @Html.EditorFor(model => project.Hot, new { htmlAttributes = new { id = "Hot" } })
+                </td>
+                <td>
+                    <a href="javascript:;" onclick="updateInfo(@project.Id)">Cập nhật</a> -
+                    @Html.ActionLink("Sửa", "UpdateProject", new { proId = project.Id })
+                    - <a href="javascript:;" onclick="deleteProject('@project.Id')" class="red-warring">Xóa</a>
+                </td>
+            </tr>
+                }
+                @if (Model.Projects.PageCount > 1)
+                {
+                    <tr>
+                        @*<td colspan="9">@Html.PagedListPager(Model.Projects, page => Url.Action("ListProject", new { page, catId = Model.CategoryId, name = Model.Name }))</td>*@
+                        <td colspan="9">@Html.PagedListPager(Model.Projects, page => Url.Action("ListProject", new { page, catId = Model.CatId, parentId = Model.ParentId, name = Model.Name, sort = Model.Sort }))</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </form>
+</div>
+@section scripts
+{
+    <script type="text/javascript">
+        function deleteProject(id) {
+            if (confirm("Bạn có chắc chắn xóa bài viết này không?")) {
+                $.post("/ProjectVcms/DeleteProject", { proId: id }, function (data) {
+                    if (data) {
+                        $.toast({
+                            text: 'Xóa dự án thành công',
+                            position: 'bottom-right',
+                            icon: 'success',
+                        })
+                        $("tr[data-id='" + id + "']").fadeOut();
+                    }
+                    else {
+                        $.toast({
+                            text: 'Quá trình thực hiện không thành công. Hãy thử lại',
+                            icon: 'error',
+                        })
+                    }
+                });
+            }
+        }
+        function cloneProject(proId) {
+            $.post("/ProjectVcms/CloneProject",
+                { proId },
+                function (data) {
+                    if (data) {
+                        window.location.reload();
+                    } else {
+                        $.toast({
+                            text: 'Nhân đôi sẩn phẩm thành công',
+                            position: 'bottom-right',
+                            icon: 'success',
+                        })
+                    }
+                });
+        }
+        function updateStatus(id) {
+            var elm = $('tr[data-id="' + id + '"]');
+            var status = elm.find("#ProjectStatus").prop("checked");
+
+            $.post("/ProjectVcms/QuickUpdate", { proId: id, status },
+                function (data) {
+                    if (data) {
+                        elm.find("#statusResult").html("<strong>OK</strong>");
+                        elm.find("#statusResult strong").delay(1000).fadeOut();
+                    } else {
+                        $.toast({
+                            text: 'Quá trình thực hiện không thành công. Hãy thử lại',
+                            position: 'bottom-right',
+                            icon: 'error',
+                        })
+                        window.location.reload();
+                    };
+                });
+        }
+
+        function updateInfo(id) {
+            var elm = $('tr[data-id="' + id + '"]');
+            var sort = elm.find("#project_Sort").val();
+            var home = elm.find("input#Home").prop("checked");
+            var active = elm.find("input#ProjectStatus").prop("checked");
+            //var quantity = elm.find("#project_Quantity").val();
+            //if (quantity <= 0) {
+            //    $.toast({
+            //        text: 'Số lượng trong kho không hợp lệ.',
+            //        position: 'bottom-right',
+            //        icon: 'error',
+            //    })
+            //    return false;
+            //}
+            $.post("/ProjectVcms/QuickUpdate", { proId: id, sort, active, home },
+                function (data) {
+                    if (data) {
+                        $.toast({
+                            text: 'Cập nhật thành công',
+                            position: 'bottom-right',
+                            icon: 'success',
+                        })
+                    } else {
+                        $.toast({
+                            text: 'Quá trình thực hiện không thành công. Hãy thử lại',
+                            position: 'bottom-right',
+                            icon: 'error',
+                        })
+                        window.location.reload();
+                    };
+                });
+        }
+        function updateAllProject() {
+            $.post("/ProjectVcms/UpdateAllProject", $("#projectList").serialize(), function (data) {
+                if (data) {
+                    //alert("Cập nhật thành công");
+                    $.toast({
+                        text: 'Cập nhật thành công',
+                        position: 'bottom-right',
+                        icon: 'success',
+                    })
+                } else {
+                    //alert("Quá trình thực hiện không thành công. Hãy thử lại");
+                    $.toast({
+                        text: 'Quá trình thực hiện không thành công. Hãy thử lại',
+                        position: 'bottom-right',
+                        icon: 'error',
+                    })
+                }
+            });
+        }
+    </script>
+}

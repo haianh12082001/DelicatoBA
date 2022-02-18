@@ -1,0 +1,118 @@
+﻿@model DelicatoBA.ViewModel.HeaderViewModel
+@using DelicatoBA.Models
+@{
+    var config = (ConfigSite)HttpContext.Current.Application["ConfigSite"];
+    var parent = ViewContext.ParentActionViewContext.RouteData.Values["action"];
+}
+ 
+<header class="header @if (parent != "Index") { @Html.Raw("bg-blue")} " id="header">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-3 col-12">
+                <img src="@Path.Combine("/images/configs",config.Image)" alt="" class="header-logo" />
+            </div>
+            <div class="col-lg-9 col-12">
+                <ul class="menu-list">
+                    <li class="menu-item">
+                        <a href="@Url.Action("Index", "Home")">Trang chủ</a>
+                    </li>
+                    @foreach (var item in Model.Intro.Where(a => a.ParentId == null && a.ShowMenu))
+                    {
+                        <li class="menu-item">
+                            <a href="@Url.Action("ArticleCategory",new {url = item.Url})">@item.CategoryName</a>
+                            @if (Model.Intro.Any(a => a.ParentId == item.Id && a.ShowMenu))
+                            {
+                                <i class="fas fa-caret-down"></i>
+                                <ul class="menu-children">
+                                    @foreach (var child in Model.Intro.Where(a => a.ParentId == item.Id && a.ShowMenu))
+                                    {
+                                        <li>
+                                            <a href="@Url.Action("ArticleCategory",new {url = child.Url})">
+                                                <i class="fal fa-angle-right"></i>
+                                                @child.CategoryName
+                                            </a>
+                                        </li>
+                                    }
+                                </ul>
+                            }
+                        </li>
+                    }
+                    <li class="menu-item">
+                        <a href="@Url.Action("AllProject")">Dự án</a>
+                        @if (Model.ProjectCategories.Any(a => a.ParentId == null))
+                        {
+                            <i class="fas fa-caret-down"></i>
+                            <ul class="menu-children">
+                                @foreach (var category in Model.ProjectCategories.Where(a => a.ParentId == null))
+                                {
+                                    <li>
+                                        <a href="@Url.Action("ProjectCategory", new {url = category.Url})">
+                                            <i class="fal fa-angle-right"></i>
+                                            @*Dự án 1*@
+                                            @category.CategoryName
+                                        </a>
+                                    </li>
+                                }
+                            </ul>
+
+                        }
+                    </li>
+                    @foreach (var item in Model.ArticleCategories.Where(a => a.ParentId == null && a.ShowMenu))
+                    {
+                        <li class="menu-item">
+                            <a href="@Url.Action("ArticleCategory",new {url = item.Url})">@item.CategoryName</a>
+                            @if (Model.ArticleCategories.Any(a => a.ParentId == item.Id && a.ShowMenu))
+                            {
+                                <i class="fas fa-caret-down"></i>
+                                <ul class="menu-children">
+                                    @foreach (var child in Model.ArticleCategories.Where(a => a.ParentId == item.Id && a.ShowMenu))
+                                    {
+                                        <li>
+                                            <a href="@Url.Action("ArticleCategory",new {url = child.Url})">
+                                                <i class="fal fa-angle-right"></i>
+                                                @child.CategoryName
+                                            </a>
+                                        </li>
+                                    }
+                                </ul>
+                            }
+                        </li>
+                    }
+                    @*<li class="menu-item">
+                        <a href="">Video</a>
+                    </li>*@
+                    @*<li class="menu-item">
+                            <a href="">Tin tức</a>
+                        </li>*@
+                    <li class="menu-item">
+                        <a href="@Url.Action("Contact")">Liên hệ</a>
+                    </li>
+                    <li class="menu-item">
+                        <a href="javascript:;" onclick="$('#search-top').toggleClass('active')">
+                            <i class="fas fa-search"></i>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div class="header-mobi">
+            <div class="search-mobi">
+                <a href="javascript:;" onclick="$('#search-top').toggleClass('active')">
+                    <i class="fas fa-search"></i>
+                </a>
+            </div>
+            <div class="bars-mobi">
+                <i class="fas fa-bars"></i>
+            </div>
+        </div>
+    </div>
+    <form action="@Url.Action("SearchProject")" method="get" id="search-top" class="">
+        <div class="input-group">
+            <input type="text" name="keywords" class="form-control" autocomplete="off" placeholder="Từ khóa tìm kiếm">
+            <div class="input-group-append">
+                <button type="submit" class="btn"><i class="fal fa-search"></i></button>
+            </div>
+        </div>
+    </form>
+</header>
+
