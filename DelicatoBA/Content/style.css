@@ -1399,6 +1399,9 @@ body {
   .construction {
     padding: 40px 0;
   }
+  .construction .content {
+    padding-left: 0;
+  }
   .construction-img img {
     height: 350px;
   }
