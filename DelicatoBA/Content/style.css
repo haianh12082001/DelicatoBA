@@ -362,6 +362,10 @@ body {
   background: none;
 }
 
+.breadcrumb-item a {
+  color: #000;
+}
+
 .footer {
   background-color: #343434;
   font-size: 14px;
