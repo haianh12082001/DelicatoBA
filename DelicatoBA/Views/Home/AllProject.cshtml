@@ -13,13 +13,13 @@
 </div>
 
 <div class="container py-lg-4 py-3">
-    <h2 class="title-category text-center">Dự án</h2>
+    <h2 class="title-category text-center mb-lg-4 mb-3">Dự án</h2>
     @if (Model.Projects.Any()) 
     { 
     <div class="row">
         @foreach(var project in Model.Projects)
         { 
-        <div class="col-lg-4 col-md-6 col-12 ">
+        <div class="col-lg-4 col-md-6 col-12 mb-5">
             @Html.Partial("_ItemProject", project)
         </div>
 
