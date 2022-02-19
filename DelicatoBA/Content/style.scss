@@ -292,7 +292,7 @@ body {
 .menu-item {
     position: relative;
     padding: 20px 0;
-    font-weight: 700;
+    /*font-weight: 700;*/
 
     i {
         color: $white;
@@ -961,7 +961,7 @@ body {
     span {
         position: absolute;
         left: 50%;
-        top: 50%;
+        top: 49%;
         transform: translate(-50%,-50%);
         margin-bottom: 0;
         font-weight: 700;
