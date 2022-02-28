@@ -146,6 +146,19 @@ namespace DelicatoBA.Controllers
             _unitOfWork.Save();
             return true;
         }
+        public bool UpdateTeamCat(int sort = 1, bool active = false,int teamId = 0)
+        {
+            var teamCat = _unitOfWork.TeamRepository.GetById(teamId);
+            if (teamCat == null)
+            {
+                return false;
+            }
+
+            teamCat.Active = active;
+         
+            _unitOfWork.Save();
+            return true;
+        }
         #endregion
         protected override void Dispose(bool disposing)
         {
