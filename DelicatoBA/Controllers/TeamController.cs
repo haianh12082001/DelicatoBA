@@ -153,7 +153,6 @@ namespace DelicatoBA.Controllers
             {
                 return false;
             }
-
             teamCat.Active = active;
          
             _unitOfWork.Save();

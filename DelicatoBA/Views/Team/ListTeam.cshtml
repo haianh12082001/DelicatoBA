@@ -99,7 +99,7 @@
         function updateTeam(id) {
             var divId = $("tr[data-id='" + id + "']");
             //var sort = divId.find("input[name=Sort]").val();
-            var active = divId.find("input#Active").prop("checked");
+            var active = divId.find("input#Active").prop("checked");    
             $.post("/Team/UpdateTeamCat", { teamId: id, active, }, function (data) {
                 console.log(active)
 
